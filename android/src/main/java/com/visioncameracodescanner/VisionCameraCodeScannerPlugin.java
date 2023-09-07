@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
+import java.nio.ByteBuffer;
 
 public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
   private BarcodeScanner barcodeScanner = null;
@@ -69,7 +70,7 @@ public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
     Image mediaImage = frame.getImage();
     if (mediaImage != null) {
       ArrayList<Task<List<Barcode>>> tasks = new ArrayList<Task<List<Barcode>>>();
-      InputImage image = InputImage.fromMediaImage(mediaImage, Orientation.valueOf(frame.getOrientation()).toDegrees());
+      InputImage image = toInputImage(mediaImage, Orientation.valueOf(frame.getOrientation()).toDegrees());
 
       if (params != null && params.containsKey("checkInverted")) {
         boolean checkInverted = (Boolean) params.get("checkInverted");
@@ -143,6 +144,33 @@ public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
     } else {
       throw new IllegalArgumentException("Second parameter must be an Array");
     }
+  }
+
+  private InputImage toInputImage(@NonNull Image image, @NonNull int rotation) {
+    Image.Plane[] planes = image.getPlanes();
+    ByteBuffer yBuffer = planes[0].getBuffer();
+    ByteBuffer uvBuffer = planes[2].getBuffer();
+
+    int ySize = yBuffer.remaining();
+    int uvSize = uvBuffer.remaining();
+
+    byte[] yuvData = new byte[ySize + uvSize];
+
+    yBuffer.get(yuvData, 0, ySize);
+    uvBuffer.get(yuvData, ySize, uvSize);
+
+    int width = image.getWidth();
+    int height = image.getHeight();
+
+    InputImage inputImage = InputImage.fromByteArray(
+        yuvData,
+        width,
+        height,
+        rotation,
+        InputImage.IMAGE_FORMAT_NV21
+    );
+
+    return inputImage;
   }
 
   private Map<String, Object> convertContent(@NonNull Barcode barcode) {

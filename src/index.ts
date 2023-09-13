@@ -1,4 +1,5 @@
-import { VisionCameraProxy, Frame } from 'react-native-vision-camera';
+import { VisionCameraProxy } from 'react-native-vision-camera';
+import type { Frame } from 'react-native-vision-camera';
 
 /**
  * @see https://developers.google.com/android/reference/com/google/mlkit/vision/barcode/Barcode.BarcodeFormat

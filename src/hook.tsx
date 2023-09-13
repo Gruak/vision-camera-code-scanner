@@ -1,13 +1,14 @@
-import { FrameProcessor, useFrameProcessor } from 'react-native-vision-camera';
+import { useFrameProcessor } from 'react-native-vision-camera';
+import type { FrameProcessor } from 'react-native-vision-camera';
+import { Worklets } from 'react-native-worklets-core';
 import { useState } from 'react';
 
 import {
-  Barcode,
   BarcodeFormat,
-  CodeScannerOptions,
   DefaultCodeScannerOptions,
   scanBarcodes,
 } from './index';
+import type { Barcode, CodeScannerOptions } from './index';
 
 export function useScanBarcodes(
   types: BarcodeFormat[],

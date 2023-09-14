@@ -69,7 +69,7 @@ public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
     Image mediaImage = frame.getImage();
     if (mediaImage != null) {
       ArrayList<Task<List<Barcode>>> tasks = new ArrayList<Task<List<Barcode>>>();
-      InputImage image = InputImage.fromMediaImage(mediaImage, Orientation.valueOf(frame.getOrientation()).toDegrees());
+      InputImage image = InputImage.fromMediaImage(mediaImage, getDegrees(frame));
 
       if (params != null && params.containsKey("checkInverted")) {
         boolean checkInverted = (Boolean) params.get("checkInverted");
@@ -106,6 +106,11 @@ public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
       }
     }
     return null;
+  }
+
+  private int getDegrees(@NonNull Frame frame) {
+      Orientation orientation = Orientation.Companion.fromUnionValue(frame.getOrientation());
+      return (orientation != null) ? orientation.toDegrees() : Orientation.PORTRAIT.toDegrees();
   }
 
   private void createBarcodeInstance(@Nullable Map<String, Object> params) {

@@ -109,39 +109,39 @@ public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
   }
 
   private void createBarcodeInstance(@Nullable Map<String, Object> params) {
-    if (params != null && params.containsKey("types") && params.get("types") instanceof ReadableNativeArray) {
-      ReadableNativeArray rawFormats = (ReadableNativeArray) params.get("types");
+    if (params == null || !params.containsKey("types") || !(params.get("types") instanceof List<?>)) {
+      throw new IllegalArgumentException("\"types\" parameter must be an Array");
+    }
 
-      int formatsBitmap = 0;
-      int formatsIndex = 0;
-      int formatsSize = rawFormats.size();
-      int[] formats = new int[formatsSize];
+    List<Integer> rawFormats = (List<Integer>) params.get("types");
 
-      for (int i = 0; i < formatsSize; i++) {
-        int format = rawFormats.getInt(i);
-        if (barcodeFormats.contains(format)){
-          formats[formatsIndex] = format;
-          formatsIndex++;
-          formatsBitmap |= format;
-        }
+    int formatsBitmap = 0;
+    int formatsIndex = 0;
+    int formatsSize = rawFormats.size();
+    int[] formats = new int[formatsSize];
+
+    for (int i = 0; i < formatsSize; i++) {
+      int format = rawFormats.get(i);
+      if (barcodeFormats.contains(format)){
+        formats[formatsIndex] = format;
+        formatsIndex++;
+        formatsBitmap |= format;
       }
+    }
 
-      if (formatsIndex == 0) {
-        throw new ArrayIndexOutOfBoundsException("Need to provide at least one valid Barcode format");
-      }
+    if (formatsIndex == 0) {
+      throw new ArrayIndexOutOfBoundsException("Need to provide at least one valid Barcode format");
+    }
 
-      if (barcodeScanner == null || formatsBitmap != barcodeScannerFormatsBitmap) {
-        barcodeScanner = BarcodeScanning.getClient(
-          new BarcodeScannerOptions.Builder()
-            .setBarcodeFormats(
-              formats[0],
-              Arrays.copyOfRange(formats, 1, formatsIndex)
-            )
-            .build());
-        barcodeScannerFormatsBitmap = formatsBitmap;
-      }
-    } else {
-      throw new IllegalArgumentException("Second parameter must be an Array");
+    if (barcodeScanner == null || formatsBitmap != barcodeScannerFormatsBitmap) {
+      barcodeScanner = BarcodeScanning.getClient(
+        new BarcodeScannerOptions.Builder()
+          .setBarcodeFormats(
+            formats[0],
+            Arrays.copyOfRange(formats, 1, formatsIndex)
+          )
+          .build());
+      barcodeScannerFormatsBitmap = formatsBitmap;
     }
   }
 
@@ -220,17 +220,17 @@ public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
 
   // Bitmap Inversion https://gist.github.com/moneytoo/87e3772c821cb1e86415
   private Bitmap invert(Bitmap src)
-	{ 
+	{
 		int height = src.getHeight();
-		int width = src.getWidth();    
+		int width = src.getWidth();
 
 		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		Paint paint = new Paint();
-		
+
 		ColorMatrix matrixGrayscale = new ColorMatrix();
 		matrixGrayscale.setSaturation(0);
-		
+
 		ColorMatrix matrixInvert = new ColorMatrix();
 		matrixInvert.set(new float[]
 		{
@@ -240,10 +240,10 @@ public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
 			0.0f, 0.0f, 0.0f, 1.0f, 0.0f
 		});
 		matrixInvert.preConcat(matrixGrayscale);
-		
+
 		ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrixInvert);
 		paint.setColorFilter(filter);
-		
+
 		canvas.drawBitmap(src, 0, 0, paint);
 		return bitmap;
 	}

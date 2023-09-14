@@ -291,9 +291,9 @@ export type CodeScannerOptions = {
   checkInverted: boolean;
 };
 
-export const DefaultCodeScannerOptions = {
+export const defaultCodeScannerOptions = {
   checkInverted: false,
-};
+} satisfies CodeScannerOptions;
 
 const plugin = VisionCameraProxy.getFrameProcessorPlugin('scanCodes');
 
@@ -307,7 +307,7 @@ const plugin = VisionCameraProxy.getFrameProcessorPlugin('scanCodes');
 export function scanBarcodes(
   frame: Frame,
   types: BarcodeFormat[],
-  options: CodeScannerOptions = DefaultCodeScannerOptions
+  options?: CodeScannerOptions
 ): Barcode[] {
   'worklet';
 
@@ -315,7 +315,8 @@ export function scanBarcodes(
     throw new Error('Failed to load Frame Processor Plugin "scanCodes"!');
 
   return plugin.call(frame, {
-    ...options,
+    ...defaultCodeScannerOptions,
+    ...(options || {}),
     types,
   }) as unknown as Barcode[];
 }

@@ -254,8 +254,8 @@ export type CodeScannerOptions = {
      */
     checkInverted: boolean;
 };
-export declare const DefaultCodeScannerOptions: {
-    checkInverted: boolean;
+export declare const defaultCodeScannerOptions: {
+    checkInverted: false;
 };
 /**
  * Scans barcodes in the passed frame with MLKit

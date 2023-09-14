@@ -317,7 +317,8 @@ export function scanBarcodes(
   return plugin.call(frame, {
     ...defaultCodeScannerOptions,
     ...(options || {}),
-    types,
+    // Array params passed to worklet get converted to object for some reason so we convert it back to array here
+    types: Array.from(types),
   }) as unknown as Barcode[];
 }
 

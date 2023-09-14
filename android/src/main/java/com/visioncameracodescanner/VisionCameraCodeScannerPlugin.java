@@ -113,7 +113,7 @@ public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
       throw new IllegalArgumentException("\"types\" parameter must be an Array");
     }
 
-    List<Integer> rawFormats = (List<Integer>) params.get("types");
+    List<Double> rawFormats = (List<Double>) params.get("types");
 
     int formatsBitmap = 0;
     int formatsIndex = 0;
@@ -121,7 +121,7 @@ public class VisionCameraCodeScannerPlugin extends FrameProcessorPlugin {
     int[] formats = new int[formatsSize];
 
     for (int i = 0; i < formatsSize; i++) {
-      int format = rawFormats.get(i);
+      int format = rawFormats.get(i).intValue();
       if (barcodeFormats.contains(format)){
         formats[formatsIndex] = format;
         formatsIndex++;

@@ -44,18 +44,18 @@ android {
 
 repositories {
     mavenLocal()
+    mavenCentral()
     maven {
         // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
         url("$rootDir/../node_modules/react-native/android")
     }
     google()
-    mavenCentral()
 }
 
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    api project(":react-native-vision-camera")
+    implementation project(":react-native-vision-camera")
     implementation "androidx.camera:camera-core:1.2.3"
     implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0'
 }

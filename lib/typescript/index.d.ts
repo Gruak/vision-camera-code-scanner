@@ -252,7 +252,7 @@ export type CodeScannerOptions = {
     /**
      * checkInverted: `Allows you to also scan white barcode with black backgrounds`
      */
-    checkInverted: boolean;
+    checkInverted?: boolean;
 };
 export declare const defaultCodeScannerOptions: {
     checkInverted: false;
